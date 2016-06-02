@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.org/geerlingguy/ansible-role-nginx.svg?branch=master)](https://travis-ci.org/geerlingguy/ansible-role-nginx)
 
-Installs Nginx on RedHat/CentOS or Debian/Ubuntu Linux, or FreeBSD servers.
+Installs Nginx on RedHat/CentOS or Debian/Ubuntu linux servers.
 
-This role installs and configures the latest version of Nginx from the Nginx yum repository (on RedHat-based systems) or via apt (on Debian-based systems) or pkgng (on FreeBSD systems). You will likely need to do extra setup work after this role has installed Nginx, like adding your own [virtualhost].conf file inside `/etc/nginx/conf.d/`, describing the location and options to use for your particular website.
+This role installs and configures the latest version of Nginx from the Nginx yum repository (on RedHat-based systems) or via apt (on Debian-based systems). You will likely need to do extra setup work after this role has installed Nginx, like adding your own [virtualhost].conf file inside `/etc/nginx/conf.d/`, describing the location and options to use for your particular website.
 
 ## Requirements
 
@@ -19,7 +19,8 @@ Available variables are listed below, along with default values (see `defaults/m
 A list of vhost definitions (server blocks) for Nginx virtual hosts. If left empty, you will need to supply your own virtual host configuration. See the commented example in `defaults/main.yml` for available server options. If you have a large number of customizations required for your server definition(s), you're likely better off managing the vhost configuration file yourself, leaving this variable set to `[]`.
 
     nginx_vhosts:
-      - listen: "80 default_server"
+      - name: default
+        listen: "80 default_server"
         server_name: "example.com"
         root: "/var/www/example.com"
         index: "index.php index.html index.htm"
@@ -37,10 +38,6 @@ A list of vhost definitions (server blocks) for Nginx virtual hosts. If left emp
 
 An example of a fully-populated nginx_vhosts entry, using a `|` to declare a block of syntax for the `extra_parameters`.
 
-    nginx_remove_default_vhost: false
-
-Whether to remove the 'default' virtualhost configuration supplied by Nginx. Useful if you want the base `/` URL to be directed at one of your own virtual hosts configured in a separate .conf file.
-
     nginx_upstreams: []
 
 If you are configuring Nginx as a load balancer, you can define one or more upstream sets using this variable. In addition to defining at least one upstream, you would need to configure one of your server blocks to proxy requests through the defined upstream (e.g. `proxy_pass http://myapp1;`). See the commented example in `defaults/main.yml` for more information.
@@ -55,8 +52,9 @@ The user under which Nginx will run. Defaults to `nginx` for RedHat, and `www-da
 
 `nginx_worker_processes` should be set to the number of cores present on your machine. Connections (find this number with `grep processor /proc/cpuinfo | wc -l`). `nginx_worker_connections` is the number of connections per process. Set this higher to handle more simultaneous connections (and remember that a connection will be used for as long as the keepalive timeout duration for every client!). You can set `nginx_multi_accept` to `on` if you want Nginx to accept all connections immediately.
 
-    nginx_error_log: "/var/log/nginx/error.log warn"
-    nginx_access_log: "/var/log/nginx/access.log main buffer=16k"
+    nginx_log_dir: "/var/log/nginx"
+    nginx_error_log: "{{nginx_log_dir}}/error.log warn"
+    nginx_access_log: "{{nginx_log_dir}}/access.log main buffer=16k"
 
 Configuration of the default error and access logs. Set to `off` to disable a log entirely.
 
@@ -98,11 +96,6 @@ Extra lines to be inserted in the top-level `http` block in `nginx.conf`. The va
 
 (For Debian/Ubuntu only) Allows you to set a different repository for the installation of Nginx. As an example, if you are running Debian's wheezy release, and want to get a newer version of Nginx, you can install the `wheezy-backports` repository and set that value here, and Ansible will use that as the `-t` option while installing Nginx.
 
-    nginx_ppa_use: false
-    nginx_ppa_version: stable
-
-(For Ubuntu only) Allows you to use the official Nginx PPA instead of the system's package. You can set the version to `stable` or `development`.
-
 ## Dependencies
 
 None.
@@ -119,4 +112,6 @@ MIT / BSD
 
 ## Author Information
 
-This role was created in 2014 by [Jeff Geerling](http://jeffgeerling.com/), author of [Ansible for DevOps](http://ansiblefordevops.com/).
+This role was originally created in 2014 by [Jeff Geerling](http://jeffgeerling.com/), author of [Ansible for DevOps](http://ansiblefordevops.com/).
+
+Singleplatform has made some modifications. Including changes that render this role incompatible with Ubuntu packaged versions of Nginx.

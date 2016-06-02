@@ -15,7 +15,7 @@ events {
 {% endif %}
 
 http {
-    include       {{ nginx_mime_file_path }};
+    include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
 
     server_names_hash_bucket_size {{ nginx_server_names_hash_bucket_size }};
@@ -42,7 +42,7 @@ http {
 {% endif %}
 
 {% if nginx_extra_http_options %}
-    {{ nginx_extra_http_options }}
+    {{ nginx_extra_http_options | replace('\n', '\n    ')}}
 {% endif %}
 
 {% for upstream in nginx_upstreams %}
@@ -57,7 +57,4 @@ http {
 {% endfor %}
 
     include {{ nginx_conf_path }}/*.conf;
-{% if nginx_conf_path != nginx_vhost_path %}
-    include {{ nginx_vhost_path }}/*;
-{% endif %}
 }

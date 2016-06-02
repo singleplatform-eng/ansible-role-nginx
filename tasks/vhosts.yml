@@ -1,26 +1,24 @@
 ---
-- name: Remove default nginx vhost config file (if configured).
-  file:
-    path: "{{ nginx_default_vhost_path }}"
-    state: absent
-  when: nginx_remove_default_vhost
-  notify:
-    - reload nginx
-
-- name: Add managed vhost config file (if any vhosts are configured).
+- name: Add managed per-vhost config files (if any vhosts are configured).
   template:
     src: vhosts.j2
-    dest: "{{ nginx_vhost_path }}/vhosts.conf"
+    dest: "{{nginx_conf_path}}/{{item.name}}.conf"
     mode: 0644
+  with_items: "{{nginx_vhosts}}"
   when: nginx_vhosts|length > 0
   notify:
     - reload nginx
 
-- name: Remove managed vhost config file (if no vhosts are configured).
+# TODO: use find module once we move to 2.0
+- name: Find config files in nginx_conf_path
+  shell: find {{nginx_conf_path}} -name '*.conf' -type f -printf '%f\n'|sed 's/.conf//'
+  register: all_nginx_vhost_confs
+
+- name: Remove un-managed config files
   file:
-    path: "{{ nginx_vhost_path }}/vhosts.conf"
+    path: "{{nginx_conf_path}}/{{item}}.conf"
     state: absent
-  when: nginx_vhosts|length == 0
+  with_items: "{{all_nginx_vhost_confs.stdout_lines|default([])}}"
+  when: item not in nginx_vhosts|map(attribute='name')|list
   notify:
     - reload nginx
-

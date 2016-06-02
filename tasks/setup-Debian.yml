@@ -1,9 +1,20 @@
 ---
-- name: Update apt cache.
-  apt: update_cache=yes cache_valid_time=86400
+
+- name: Add apt key
+  apt_key:
+    url: "{{nginx_apt_key}}"
+    state: present
+
+- name: Add apt repo
+  apt_repository:
+    repo: "deb {{nginx_apt_source}} {{ansible_distribution_release}} nginx"
+    state: present
+    update_cache: yes
 
 - name: Ensure nginx is installed.
   apt:
-    name: "{{ nginx_package_name }}"
-    state: installed
-    default_release: "{{ nginx_default_release }}"
+    pkg: "{{nginx_package_name}}"
+    state: present
+    default_release: "{{nginx_default_release}}"
+    update_cache: yes
+    cache_valid_time: 86400

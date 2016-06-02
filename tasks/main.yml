@@ -6,6 +6,9 @@
 - include: setup-Debian.yml
   when: ansible_os_family == 'Debian'
 
+# SSL configuration
+- include: ssl.yml
+
 # Vhost configuration.
 - include: vhosts.yml
 

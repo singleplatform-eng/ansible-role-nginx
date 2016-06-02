@@ -1,0 +1,27 @@
+---
+
+- name: Ensure SSL directory exists
+  file:
+    state: directory
+    path: "{{nginx_ssl_path}}"
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Add SSL certs
+  copy:
+    content: "{{item.value}}"
+    dest: "{{nginx_ssl_path}}/{{item.filename}}"
+    owner: root
+    group: root
+    mode: 0400
+  with_items: nginx_ssl_certs
+
+- name: Add SSL keys
+  copy:
+    content: "{{item.value}}"
+    dest: "{{nginx_ssl_path}}/{{item.filename}}"
+    owner: root
+    group: root
+    mode: 0400
+  with_items: nginx_ssl_keys

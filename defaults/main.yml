@@ -12,6 +12,9 @@ nginx_package_name: "nginx"
 nginx_user: nginx
 nginx_pidfile: /var/run/nginx.pid
 nginx_conf_path: /etc/nginx/conf.d
+nginx_ssl_path: /etc/nginx/ssl
+nginx_ssl_certs: []
+nginx_ssl_keys: []
 
 nginx_worker_processes: "1"
 nginx_worker_connections: "1024"

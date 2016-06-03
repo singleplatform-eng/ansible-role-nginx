@@ -15,7 +15,7 @@
     owner: root
     group: root
     mode: 0400
-  with_items: nginx_ssl_certs
+  with_items: "{{nginx_ssl_certs}}"
 
 - name: Add SSL keys
   copy:
@@ -24,4 +24,4 @@
     owner: root
     group: root
     mode: 0400
-  with_items: nginx_ssl_keys
+  with_items: "{{nginx_ssl_keys}}"

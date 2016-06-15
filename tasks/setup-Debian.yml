@@ -9,6 +9,8 @@
   apt_repository:
     repo: "deb {{nginx_apt_source}} {{ansible_distribution_release}} nginx"
     state: present
+    # temporary fix until https://github.com/ansible/ansible-modules-core/pull/3702 is released
+    mode: '0644'
     update_cache: yes
 
 - name: Ensure nginx is installed.

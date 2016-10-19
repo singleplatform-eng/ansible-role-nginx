@@ -4,6 +4,8 @@
 
 Installs Nginx on RedHat/CentOS or Debian/Ubuntu linux servers.
 
+https://galaxy.ansible.com/singleplatform-eng/nginx/
+
 This role installs and configures the latest version of Nginx from the Nginx yum repository (on RedHat-based systems) or via apt (on Debian-based systems). You will likely need to do extra setup work after this role has installed Nginx, like adding your own [virtualhost].conf file inside `/etc/nginx/conf.d/`, describing the location and options to use for your particular website.
 
 ## Requirements
@@ -104,7 +106,7 @@ None.
 
     - hosts: server
       roles:
-        - { role: geerlingguy.nginx }
+        - nginx
 
 ## License
 

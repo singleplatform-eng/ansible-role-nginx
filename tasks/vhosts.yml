@@ -5,20 +5,19 @@
     dest: "{{nginx_conf_path}}/{{item.name}}.conf"
     mode: 0644
   with_items: "{{nginx_vhosts}}"
-  when: nginx_vhosts|length > 0
+  when: nginx_vhosts | length > 0
   notify:
     - reload nginx
 
-# TODO: use find module once we move to 2.0
 - name: Find config files in nginx_conf_path
-  shell: find {{nginx_conf_path}} -name '*.conf' -type f -printf '%f\n'|sed 's/.conf//'
+  find: paths={{nginx_conf_path}} patterns='*.conf'
   register: all_nginx_vhost_confs
 
 - name: Remove un-managed config files
   file:
     path: "{{nginx_conf_path}}/{{item}}.conf"
     state: absent
-  with_items: "{{all_nginx_vhost_confs.stdout_lines|default([])}}"
-  when: item not in nginx_vhosts|map(attribute='name')|list
+  with_items: "{{all_nginx_vhost_confs.files | default([]) | map(attribute='path') | list}}"
+  when: (item | basename | splitext | first) not in (nginx_vhosts | map(attribute='name') | list)
   notify:
     - reload nginx

@@ -1,9 +1,9 @@
 ---
 # Setup/install tasks.
-- include: setup-RedHat.yml
+- include_tasks: setup-RedHat.yml
   when: ansible_os_family == 'RedHat' and nginx_install
 
-- include: setup-Debian.yml
+- include_tasks: setup-Debian.yml
   when: ansible_os_family == 'Debian' and nginx_install
 
 - block:
@@ -11,10 +11,10 @@
     service: name=nginx enabled=yes
 
   # SSL configuration
-  - include: ssl.yml
+  - include_tasks: ssl.yml
 
   # Vhost configuration.
-  - include: vhosts.yml
+  - include_tasks: vhosts.yml
 
   - name: Add group and other access to /etc/nginx
     file:
